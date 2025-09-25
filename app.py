@@ -1,91 +1,151 @@
-import os
-import uuid
 import subprocess
+import re
 from flask import Flask, request, jsonify, Response
-from werkzeug.utils import secure_filename
+from webvtt import WebVTT
 
 # --- Flask App Initialization ---
 app = Flask(__name__)
 
-# --- Configuration ---
-UPLOAD_FOLDER = 'uploads'
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+# --- Predefined Sign Language Dictionary ---
+signTokenDic = {
+    'HELLO': 'gifs/hello.gif',
+    'WORLD': 'gifs/world.gif',
+    'HOW': 'gifs/how.gif',
+    'YOU': 'gifs/you.gif',
+    'DO': 'gifs/do.gif',
+    'I': 'gifs/i.gif',
+    'AM': 'gifs/am.gif',
+    'FINE': 'gifs/fine.gif',
+    'THANK': 'gifs/thank.gif',
+    'GOOD': 'gifs/good.gif',
+    'BAD': 'gifs/bad.gif',
+    'YES': 'gifs/yes.gif',
+    'NO': 'gifs/no.gif',
+    'PLEASE': 'gifs/please.gif',
+    'SORRY': 'gifs/sorry.gif',
+    'WHAT': 'gifs/what.gif',
+    'WHERE': 'gifs/where.gif',
+    'WHEN': 'gifs/when.gif',
+    'WHO': 'gifs/who.gif',
+    'WHY': 'gifs/why.gif'
+}
 
-# --- Helper Function ---
-def allowed_file(filename: str) -> bool:
-    """Checks if the filename has an allowed extension."""
-    ALLOWED_EXTENSIONS = {'mp3', 'wav', 'm4a', 'ogg', 'mp4', 'mov', 'webm'}
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+# --- API Endpoint for YouTube Transcription ---
+@app.route('/transcribe-youtube', methods=['POST'])
+def transcribe_youtube():
+    """
+    Accepts a YouTube URL, transcribes the audio, and returns sign language tokens
+    for words in the signTokenDic.
+    """
+    # 1. Get the YouTube URL from the incoming JSON request
+    data = request.get_json()
+    if not data or 'youtube_url' not in data:
+        return jsonify({"error": "youtube_url not found in request body"}), 400
+    
+    youtube_url = data['youtube_url']
+    print(f"Received YouTube URL: {youtube_url}")
 
-# --- API Endpoint ---
-@app.route('/transcribe', methods=['POST'])
-def transcribe_audio():
-    if 'file' not in request.files:
-        return jsonify({"error": "No file part in the request"}), 400
+    ffmpeg_process = None
+    whisper_process = None
 
-    file = request.files['file']
+    try:
+        # 2. Use yt-dlp to get the best audio-only stream URL
+        print("Fetching direct audio URL with yt-dlp...")
+        yt_dlp_command = ["yt-dlp", "-f", "bestaudio", "-g", youtube_url]
+        audio_url = subprocess.check_output(yt_dlp_command, text=True).strip()
+        print(f"✅ Got audio stream URL.")
 
-    if not file or not file.filename:
-        return jsonify({"error": "No selected file"}), 400
-
-    if allowed_file(file.filename):
-        original_filename = secure_filename(file.filename)
-        _root, file_extension = os.path.splitext(original_filename)
+        # 3. Define the ffmpeg and whisper commands for the pipeline
+        print("Starting ffmpeg and whisper pipeline...")
+        ffmpeg_command = [
+            "ffmpeg",
+            "-i", audio_url,
+            "-f", "wav",
+            "-ar", "16000",
+            "-ac", "1",
+            "-",  # Pipe output to stdout
+            "-loglevel", "error"
+        ]
         
-        unique_filename = str(uuid.uuid4())
-        audio_filepath = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename + file_extension)
-        # Define the path for the VTT file that Whisper will create
-        vtt_filepath = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename + ".vtt")
-        
-        try:
-            # 1. Save the uploaded audio file
-            file.save(audio_filepath)
-            print(f"Audio saved to {audio_filepath}")
+        whisper_command = [
+            "whisper",
+            "-",  # Read audio from stdin
+            "--model", "base",
+            "--output_format", "vtt"
+        ]
 
-            # 2. Build and run the Whisper command-line tool as a subprocess
-            command = [
-                "whisper",
-                audio_filepath,
-                "--model", "base",
-                "--output_format", "vtt",
-                "--output_dir", app.config['UPLOAD_FOLDER']
-            ]
-            print(f"Running command: {' '.join(command)}")
-            subprocess.run(command, check=True, capture_output=True, text=True)
-            print(f"✅ Whisper CLI finished. VTT file should be at {vtt_filepath}")
+        # 4. Start the ffmpeg process
+        ffmpeg_process = subprocess.Popen(ffmpeg_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
-            # 3. Read the content of the VTT file created by Whisper
-            with open(vtt_filepath, 'r', encoding='utf-8') as f:
-                vtt_content = f.read()
+        # 5. Start the whisper process, piping ffmpeg's output to its input
+        whisper_process = subprocess.Popen(
+            whisper_command, 
+            stdin=ffmpeg_process.stdout, 
+            stdout=subprocess.PIPE, 
+            stderr=subprocess.PIPE
+        )
 
-            # 4. Return the VTT content in the response
-            return Response(
-                vtt_content,
-                mimetype="text/vtt",
-                headers={"Content-Disposition": "attachment; filename=transcription.vtt"}
-            )
+        # 6. Get the VTT output and any errors
+        vtt_content_bytes, whisper_err_bytes = whisper_process.communicate()
+        _, ffmpeg_err_bytes = ffmpeg_process.communicate()
 
-        except subprocess.CalledProcessError as e:
-            # This will catch errors if the whisper command fails
-            print(f"Error during Whisper CLI execution: {e.stderr}")
-            return jsonify({"error": "Transcription failed.", "details": e.stderr}), 500
-        except FileNotFoundError:
-            # This catches the error if the VTT file wasn't created
-             print(f"Error: VTT file not found at {vtt_filepath}")
-             return jsonify({"error": "Transcription output file not found."}), 500
-        except Exception as e:
-            print(f"An unexpected error occurred: {e}")
-            return jsonify({"error": "An unexpected error occurred."}), 500
-        finally:
-            # 5. Clean up both the audio and the VTT file
-            if os.path.exists(audio_filepath):
-                os.remove(audio_filepath)
-            if os.path.exists(vtt_filepath):
-                os.remove(vtt_filepath)
-    else:
-        return jsonify({"error": f"Invalid file type."}), 400
+        if ffmpeg_process.returncode != 0:
+            raise RuntimeError(f"FFmpeg failed with error: {ffmpeg_err_bytes.decode('utf-8')}")
+
+        if whisper_process.returncode != 0:
+            raise RuntimeError(f"Whisper failed with error: {whisper_err_bytes.decode('utf-8')}")
+
+        print("✅ Pipeline finished successfully.")
+
+        # 7. Parse VTT content and extract sign tokens
+        vtt_content = vtt_content_bytes.decode('utf-8')
+        sign_tokens = process_vtt_content(vtt_content)
+
+        # 8. Return the sign tokens in the required format
+        return jsonify({
+            "success": True,
+            "signTokens": sign_tokens
+        })
+
+    except subprocess.CalledProcessError as e:
+        print(f"Error with yt-dlp: {e}")
+        return jsonify({"error": "Failed to fetch audio from YouTube URL.", "details": str(e)}), 500
+    except (RuntimeError, Exception) as e:
+        print(f"An error occurred in the pipeline: {e}")
+        return jsonify({"error": "An error occurred during transcription.", "details": str(e)}), 500
+
+def process_vtt_content(vtt_content):
+    """
+    Parse VTT content and extract tokens that exist in signTokenDic.
+    """
+    sign_tokens = []
+    try:
+        # Parse VTT content
+        vtt = WebVTT().from_string(vtt_content)
+        for caption in vtt.captions:
+            # Clean and tokenize the caption text
+            text = caption.text.strip().upper()
+            # Remove punctuation and split into words
+            words = re.findall(r'\b\w+\b', text)
+            # Filter words that exist in signTokenDic
+            valid_tokens = [word for word in words if word in signTokenDic]
+            
+            if valid_tokens:
+                sign_tokens.append({
+                    "start": caption.start_in_seconds,
+                    "end": caption.end_in_seconds,
+                    "tokens": valid_tokens
+                })
+    except Exception as e:
+        print(f"Error parsing VTT content: {e}")
+        return []
+    
+    return sign_tokens
+
+# --- Health Check Endpoint ---
+@app.route('/health', methods=['GET'])
+def health_check():
+    return jsonify({"status": "healthy"})
 
 # --- Run the App ---
 if __name__ == '__main__':
