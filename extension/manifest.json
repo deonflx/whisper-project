@@ -1,0 +1,41 @@
+{
+  "manifest_version": 3,
+  "name": "Sign  Translator",
+  "version": "1.0.0",
+  "description": "Translates video subtitles into sign language GIFs using Flask backend",
+  "permissions": [
+    "activeTab",
+    "storage",
+    "scripting"
+  ],
+  "host_permissions": [
+    "http://localhost:5000/*",
+    "https://*.youtube.com/*",
+    "http://*.youtube.com/*",
+    "https://*.netflix.com/*",
+    "http://*.netflix.com/*",
+    "https://*/*",
+    "http://*/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "css": ["content.css"],
+      "run_at": "document_idle"
+    }
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Sign Language Translator"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["gifs/*.gif"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}

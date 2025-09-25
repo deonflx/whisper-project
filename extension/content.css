@@ -1,0 +1,123 @@
+#sign-language-overlay {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 999999;
+  background: rgba(0, 0, 0, 0.9);
+  border-radius: 12px;
+  padding: 16px;
+  border: 2px solid #ffffff;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+  display: none;
+  max-width: 320px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+}
+
+#sign-gif-container {
+  text-align: center;
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 12px;
+  display: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+#sign-gif {
+  max-width: 200px;
+  max-height: 200px;
+  width: auto;
+  height: auto;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  display: block;
+  background: #f5f5f5;
+  border: 1px solid #e0e0e0;
+}
+
+#sign-text {
+  font-size: 16px;
+  font-weight: 700;
+  color: #333333;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  margin: 0;
+  padding: 4px 8px;
+  background: #f8f9fa;
+  border-radius: 6px;
+  border: 1px solid #e9ecef;
+}
+
+/* Loading state for GIFs */
+#sign-gif:not([src]) {
+  background: linear-gradient(45deg, #f0f0f0 25%, transparent 25%), 
+              linear-gradient(-45deg, #f0f0f0 25%, transparent 25%), 
+              linear-gradient(45deg, transparent 75%, #f0f0f0 75%), 
+              linear-gradient(-45deg, transparent 75%, #f0f0f0 75%);
+  background-size: 20px 20px;
+  background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+  animation: gifLoading 1s linear infinite;
+}
+
+@keyframes gifLoading {
+  0% { background-position: 0 0, 0 10px, 10px -10px, -10px 0px; }
+  100% { background-position: 20px 0, 20px 10px, 30px -10px, 10px 0px; }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  #sign-language-overlay {
+    top: 10px;
+    right: 10px;
+    left: 10px;
+    max-width: none;
+    padding: 12px;
+  }
+  
+  #sign-gif {
+    max-width: 160px;
+    max-height: 160px;
+  }
+  
+  #sign-text {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  #sign-language-overlay {
+    top: 5px;
+    right: 5px;
+    left: 5px;
+    padding: 10px;
+  }
+  
+  #sign-gif {
+    max-width: 120px;
+    max-height: 120px;
+  }
+  
+  #sign-text {
+    font-size: 12px;
+    letter-spacing: 0.8px;
+  }
+}
+
+/* Animation for smooth transitions */
+#sign-gif-container {
+  transition: opacity 0.3s ease;
+}
+
+#sign-language-overlay[style*="display: block"] #sign-gif-container {
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
