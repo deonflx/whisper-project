@@ -1,0 +1,11 @@
+# .gitignore
+__pycache__/
+*.pyc
+whisper-env/
+.vscode/
+.env
+*.mp3
+*.flac
+*.wav
+*.m4a
+.whisper/
