@@ -1,0 +1,161 @@
+{
+  "signTokens": [
+    {
+      "end": 6.5600000000000005,
+      "start": 0.0,
+      "tokens": [
+        "PEOPLE",
+        "DIE",
+        "IN",
+        "ONE",
+        "NIGHT",
+        "WITH",
+        "NO",
+        "NO",
+        "FIRE"
+      ]
+    },
+    {
+      "end": 11.84,
+      "start": 6.5600000000000005,
+      "tokens": [
+        "THIS",
+        "IS",
+        "STORY",
+        "IN",
+        "WORLD"
+      ]
+    },
+    {
+      "end": 20.24,
+      "start": 12.48,
+      "tokens": [
+        "IN",
+        "PEOPLE",
+        "LIVE",
+        "IN",
+        "VILLAGE",
+        "NEAR",
+        "LAKE",
+        "LAKE",
+        "KILL",
+        "THEM"
+      ]
+    },
+    {
+      "end": 25.04,
+      "start": 20.88,
+      "tokens": [
+        "LAKE",
+        "SIT",
+        "ON",
+        "TOP",
+        "OLD",
+        "VOLCANO"
+      ]
+    },
+    {
+      "end": 32.48,
+      "start": 25.04,
+      "tokens": [
+        "FOR",
+        "GAS",
+        "FROM",
+        "VOLCANO",
+        "GET"
+      ]
+    },
+    {
+      "end": 38.56,
+      "start": 32.48,
+      "tokens": [
+        "AT",
+        "BOTTOM",
+        "LAKE",
+        "ONE",
+        "NIGHT"
+      ]
+    },
+    {
+      "end": 44.32,
+      "start": 38.56,
+      "tokens": [
+        "LAKE"
+      ]
+    },
+    {
+      "end": 50.8,
+      "start": 44.32,
+      "tokens": [
+        "BECAUSE",
+        "IT",
+        "IS",
+        "AIR",
+        "IT",
+        "DOWN"
+      ]
+    },
+    {
+      "end": 58.16,
+      "start": 50.8,
+      "tokens": [
+        "ALL",
+        "HUMAN",
+        "ANIMAL",
+        "WITHOUT"
+      ]
+    },
+    {
+      "end": 60.24,
+      "start": 58.16,
+      "tokens": [
+        "IN",
+        "THEIR",
+        "SLEEP",
+        "THEY",
+        "ALL",
+        "DIE"
+      ]
+    },
+    {
+      "end": 68.16,
+      "start": 62.48,
+      "tokens": [
+        "WHAT",
+        "HAPPEN",
+        "AT",
+        "LAKE",
+        "IS",
+        "THIS",
+        "IS",
+        "WHY",
+        "TODAY"
+      ]
+    },
+    {
+      "end": 76.8,
+      "start": 68.16,
+      "tokens": [
+        "FOR",
+        "MAKE",
+        "SURE",
+        "THAT",
+        "THIS",
+        "NEVER",
+        "AGAIN"
+      ]
+    },
+    {
+      "end": 84.0,
+      "start": 76.8,
+      "tokens": [
+        "ONE",
+        "MINUTE",
+        "SEE",
+        "YOU",
+        "TOMORROW"
+      ]
+    }
+  ],
+  "success": true
+}
