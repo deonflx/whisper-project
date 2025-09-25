@@ -38,7 +38,15 @@
     'IDEA': 'gifs/idea.gif',
     'LOVE': 'gifs/love.gif',
     'WITH': 'gifs/hello.gif',
-    'GET': 'gifs/you.gif'
+    'GET': 'gifs/get.gif',
+    'IT':'gifs/it.gif',
+    'IN': 'gifs/in.gif',
+    'TODAY': 'gifs/today.gif',
+    'ALL': 'gifs/all.gif',
+    'ONE': 'gifs/one.gif',
+    'SEE': 'gifs/see.gif',
+    'IS': 'gifs/is.gif'
+
 };
 
   initialize();
