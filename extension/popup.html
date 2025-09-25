@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign Language Translator</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🤟 Sign Language Translator</h1>
+      <p>Making videos accessible for everyone</p>
+    </header>
+    <section class="status-section">
+      <div class="status-item">Extension Status: <span id="extension-status">Loading...</span></div>
+      <div class="status-item">Video Detected: <span id="video-status">Scanning...</span></div>
+      <div class="status-item">Sign Data: <span id="subtitle-status">Checking...</span></div>
+    </section>
+    <section class="controls">
+      <button id="toggle-button">Start Translation</button>
+    </section>
+    <section class="instructions">
+      <h3>📋 How to use:</h3>
+      <ul>
+        <li>Navigate to a video website (YouTube, Netflix, etc.)</li>
+        <li>Start playing a video with subtitles/captions</li>
+        <li>Click "Start Translation" button above</li>
+        <li>Sign language GIFs will appear in the top-right corner</li>
+      </ul>
+    </section>
+    <section class="backend-status">
+      <p id="backend-status">Flask Backend: Checking connection...</p>
+    </section>
+    <footer>
+      <p>v1.0 • Flask Backend Integration</p>
+    </footer>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>

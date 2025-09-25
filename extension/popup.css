@@ -1,0 +1,55 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+}
+
+.container {
+  width: 380px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+}
+
+header {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  padding: 20px;
+  text-align: center;
+  color: white;
+}
+
+header h1 { font-size: 20px; font-weight: 600; margin-bottom: 5px; }
+header p { font-size: 12px; opacity: 0.9; }
+
+.status-section { padding: 15px 20px; background: #f8f9fa; border-bottom: 1px solid #e9ecef; }
+.status-item { display: flex; align-items: center; gap: 10px; margin-bottom: 5px; }
+.status-active { color: #28a745; }
+.status-inactive { color: #dc3545; }
+.status-unknown { color: #ffc107; }
+
+.controls { padding: 20px; display: flex; gap: 10px; }
+#toggle-button {
+  flex: 1; padding: 12px 16px; border: none; border-radius: 8px;
+  font-size: 14px; font-weight: 500; cursor: pointer;
+  background: linear-gradient(135deg, #28a745, #20c997); color: white;
+}
+#toggle-button.active { background: linear-gradient(135deg, #dc3545, #fd7e14); }
+#toggle-button:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3); }
+#toggle-button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.instructions { padding: 20px; border-top: 1px solid #e9ecef; }
+.instructions h3 { font-size: 14px; color: #333; margin-bottom: 15px; }
+.instructions ul { list-style: none; font-size: 12px; color: #666; line-height: 1.6; }
+.instructions li { margin-bottom: 5px; padding-left: 15px; position: relative; }
+.instructions li:before { content: "•"; position: absolute; left: 0; color: #4facfe; }
+
+.backend-status { padding: 15px 20px; background: #f8f9fa; border-top: 1px solid #e9ecef; }
+#backend-status { font-size: 12px; color: #666; text-align: center; }
+.backend-online { color: #28a745; }
+.backend-offline { color: #dc3545; }
+
+footer { padding: 15px 20px; background: #f8f9fa; text-align: center; border-top: 1px solid #e9ecef; }
+footer p { font-size: 11px; color: #666; }
